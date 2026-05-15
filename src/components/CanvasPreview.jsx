@@ -173,9 +173,9 @@ const CanvasPreview = ({ imageSrc, filters, jpegSettings, canvasRef }) => {
               ctx.fillStyle = 'white';
               ctx.fillRect(0, 0, canvas.width, canvas.height);
               if (i % 2 === 0) {
-                ctx.drawImage(img, 1, 1, canvas.width - 2, canvas.height - 2);
+                ctx.drawImage(img, 0, 0, canvas.width + 1, canvas.height + 1);
               } else {
-                ctx.drawImage(img, -1, -1, canvas.width + 2, canvas.height + 2);
+                ctx.drawImage(img, -1, -1, canvas.width + 1, canvas.height + 1);
               }
               resolve();
             };
@@ -201,9 +201,9 @@ const CanvasPreview = ({ imageSrc, filters, jpegSettings, canvasRef }) => {
               ctx.fillRect(0, 0, canvas.width, canvas.height);
               // Subtly alter size each pass to break JPEG idempotency and force compression artifacts
               if (i % 2 === 0) {
-                ctx.drawImage(img, 1, 1, canvas.width - 2, canvas.height - 2);
+                ctx.drawImage(img, 0, 0, canvas.width + 1, canvas.height + 1);
               } else {
-                ctx.drawImage(img, -1, -1, canvas.width + 2, canvas.height + 2);
+                ctx.drawImage(img, -1, -1, canvas.width + 1, canvas.height + 1);
               }
               resolve();
             };
