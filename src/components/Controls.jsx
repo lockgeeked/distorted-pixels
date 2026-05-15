@@ -44,57 +44,59 @@ const Controls = ({ filters, jpegSettings, onChange, onJpegChange, onDownload, d
       <div className="controls-box">
         <h2>JPEG settings</h2>
         
-        <div className="select-group">
-          <label>How many times to fry</label>
-          <select 
-            value={jpegSettings.fryCount} 
-            onChange={(e) => onJpegChange('fryCount', parseInt(e.target.value))}
-            disabled={disabled}
-          >
-            <option value="0">0</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="5">5</option>
-            <option value="10">10</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-          </select>
-        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div className="select-group">
+            <label>How many times to fry</label>
+            <select 
+              value={jpegSettings.fryCount} 
+              onChange={(e) => onJpegChange('fryCount', parseInt(e.target.value))}
+              disabled={disabled}
+            >
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
 
-        <div className="select-group">
-          <label>Fry quality per step (approximate)</label>
-          <select 
-            value={jpegSettings.fryQuality} 
-            onChange={(e) => onJpegChange('fryQuality', parseInt(e.target.value))}
-            disabled={disabled}
-          >
-            <option value="0">0%</option>
-            <option value="1">1%</option>
-            <option value="5">5%</option>
-            <option value="10">10%</option>
-            <option value="20">20%</option>
-            <option value="30">30%</option>
-            <option value="40">40%</option>
-            <option value="50">50%</option>
-          </select>
-        </div>
+          <div className="select-group">
+            <label>Fry quality per step (approximate)</label>
+            <select 
+              value={jpegSettings.fryQuality} 
+              onChange={(e) => onJpegChange('fryQuality', parseInt(e.target.value))}
+              disabled={disabled}
+            >
+              <option value="0">0%</option>
+              <option value="1">1%</option>
+              <option value="5">5%</option>
+              <option value="10">10%</option>
+              <option value="20">20%</option>
+              <option value="30">30%</option>
+              <option value="40">40%</option>
+              <option value="50">50%</option>
+            </select>
+          </div>
 
-        <div className="select-group">
-          <label>Maximum image resolution</label>
-          <select 
-            value={jpegSettings.maxResolution} 
-            onChange={(e) => onJpegChange('maxResolution', e.target.value === 'original' ? 'original' : parseFloat(e.target.value))}
-            disabled={disabled}
-          >
-            <option value="original">original</option>
-            <option value="0.0625">1/16 megapixels</option>
-            <option value="0.125">1/8 megapixels</option>
-            <option value="0.25">1/4 megapixels</option>
-            <option value="0.5">1/2 megapixels</option>
-            <option value="1">1 megapixels</option>
-            <option value="2">2 megapixels</option>
-          </select>
+          <div className="select-group" style={{ gridColumn: '1 / -1' }}>
+            <label>Maximum image resolution</label>
+            <select 
+              value={jpegSettings.maxResolution} 
+              onChange={(e) => onJpegChange('maxResolution', e.target.value === 'original' ? 'original' : parseFloat(e.target.value))}
+              disabled={disabled}
+            >
+              <option value="original">original</option>
+              <option value="0.0625">1/16 megapixels</option>
+              <option value="0.125">1/8 megapixels</option>
+              <option value="0.25">1/4 megapixels</option>
+              <option value="0.5">1/2 megapixels</option>
+              <option value="1">1 megapixels</option>
+              <option value="2">2 megapixels</option>
+            </select>
+          </div>
         </div>
 
         <div className="control-item" style={{marginTop: '1.5rem', marginBottom: '0'}}>
@@ -141,10 +143,12 @@ const Controls = ({ filters, jpegSettings, onChange, onJpegChange, onDownload, d
 
       <h2 style={{ marginBottom: '1rem', borderBottom: '1px solid var(--win-border-dark)', paddingBottom: '0.2rem', marginTop: '1.5rem', color: '#000' }}>Extra Filters</h2>
       
-      {renderControlGroup('Deep Fry', 'deepFry')}
-      {renderControlGroup('Glitch', 'glitch')}
-      {renderControlGroup('Wave', 'wave')}
-      {renderControlGroup('Pixelate', 'pixelate')}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+        {renderControlGroup('Deep Fry', 'deepFry')}
+        {renderControlGroup('Glitch', 'glitch')}
+        {renderControlGroup('Wave', 'wave')}
+        {renderControlGroup('Pixelate', 'pixelate')}
+      </div>
 
       <div style={{ marginTop: '2rem', textAlign: 'center' }}>
         <button 

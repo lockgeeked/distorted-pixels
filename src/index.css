@@ -124,6 +124,12 @@ main {
 @media (min-width: 900px) {
   main {
     grid-template-columns: 2fr 1fr;
+    align-items: start;
+  }
+  
+  main .window:first-child {
+    position: sticky;
+    top: 2rem;
   }
 }
 

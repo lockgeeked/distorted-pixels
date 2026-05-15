@@ -4,6 +4,7 @@ const Window = ({ title, onClose, children, defaultPosition = { x: 50, y: 50 }, 
   const [position, setPosition] = useState(defaultPosition);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [minimized, setMinimized] = useState(false);
 
   const handleMouseDown = (e) => {
     setIsDragging(true);
@@ -37,10 +38,11 @@ const Window = ({ title, onClose, children, defaultPosition = { x: 50, y: 50 }, 
       <div className="window-title-bar" onMouseDown={handleMouseDown} style={{ cursor: 'move' }}>
         <span>{title}</span>
         <div className="window-title-buttons">
-          <button className="window-btn" onClick={onClose} style={{fontWeight: 'bold'}}>X</button>
+          <button className="window-btn" onMouseDown={(e) => e.stopPropagation()} onClick={() => setMinimized(!minimized)}>_</button>
+          <button className="window-btn" onMouseDown={(e) => e.stopPropagation()} onClick={onClose} style={{fontWeight: 'bold'}}>X</button>
         </div>
       </div>
-      <div className="window-content" style={{ background: 'var(--win-bg)', minHeight: '100px', overflowY: 'auto', maxHeight: '600px' }}>
+      <div className="window-content" style={{ background: 'var(--win-bg)', minHeight: '100px', overflowY: 'auto', maxHeight: '600px', display: minimized ? 'none' : 'block' }}>
         {children}
       </div>
     </div>

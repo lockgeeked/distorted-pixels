@@ -4,6 +4,7 @@ import ImageUploader from './components/ImageUploader'
 import CanvasPreview from './components/CanvasPreview'
 import Controls from './components/Controls'
 import Window from './components/Window'
+import MediaPlayer from './components/MediaPlayer'
 
 const DEFAULT_FILTERS = {
   deepFry: { active: false, intensity: 50 },
@@ -31,6 +32,10 @@ function App() {
   const [deletedImages, setDeletedImages] = useState([]) // Array of { src: string, origin: 'canvas' | 'gallery' }
   const [savedImages, setSavedImages] = useState([])
   const [viewingImage, setViewingImage] = useState(null) // { src: string, index: number, source: 'gallery' | 'recycle-bin', origin?: string }
+
+  // Main Panel State
+  const [editorState, setEditorState] = useState({ open: true, minimized: false })
+  const [controlsState, setControlsState] = useState({ open: true, minimized: false })
 
   const canvasRef = useRef(null)
 
@@ -129,6 +134,13 @@ function App() {
   return (
     <div className="app-container">
       <div className="desktop-icon-container">
+        <div className="desktop-icon" style={{background: 'var(--accent-blue)'}} onClick={() => {
+          setEditorState({ open: true, minimized: false });
+          setControlsState({ open: true, minimized: false });
+        }}>
+          <div style={{fontSize: '40px'}}>🎨</div>
+          <span>Distorted Pixels</span>
+        </div>
         <div className="desktop-icon" style={{background: 'var(--accent-yellow)'}} onClick={() => openWindow('my-computer')}>
           <div style={{fontSize: '40px'}}>💻</div>
           <span>Computer</span>
@@ -136,6 +148,10 @@ function App() {
         <div className="desktop-icon" style={{background: 'var(--accent-pink)'}} onClick={() => openWindow('recycle-bin')}>
           <div style={{fontSize: '40px'}}>🗑️</div>
           <span>Trash</span>
+        </div>
+        <div className="desktop-icon" style={{background: 'var(--accent-orange)'}} onClick={() => openWindow('media-player')}>
+          <div style={{fontSize: '40px'}}>🎵</div>
+          <span>Music</span>
         </div>
       </div>
 
@@ -169,6 +185,14 @@ function App() {
                 ))}
               </div>
             )}
+          </div>
+        </Window>
+      )}
+
+      {openWindows.includes('media-player') && (
+        <Window title="Music Player" onClose={() => closeWindow('media-player')} defaultPosition={{x: 50, y: 350}} width="350px">
+          <div style={{padding: '15px', background: 'var(--accent-yellow)'}}>
+             <MediaPlayer />
           </div>
         </Window>
       )}
@@ -215,10 +239,14 @@ function App() {
           <div style={{padding: '10px'}}>
             <p style={{marginBottom: '10px'}}>Double-click to load sample image:</p>
             <div className="grid-container">
-               {['https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=300&h=300&fit=crop', 
-                 'https://images.unsplash.com/photo-1543852786-1cf6624b9987?w=300&h=300&fit=crop',
-                 'https://images.unsplash.com/photo-1525609004556-c46dce3100bc?w=300&h=300&fit=crop'].map((src, i) => (
-                 <div className="grid-item" key={i} onClick={() => setImageSrc(src)}>
+               {['/sample1.png', 
+                 '/sample2.png',
+                 '/sample3.png'].map((src, i) => (
+                 <div className="grid-item" key={i} onClick={() => {
+                   setImageSrc(src);
+                   setEditorState({ open: true, minimized: false });
+                   setControlsState({ open: true, minimized: false });
+                 }}>
                    <img src={src} alt="Sample" />
                    <span>Sample_{i+1}.jpg</span>
                  </div>
@@ -313,54 +341,62 @@ function App() {
       )}
 
       <main>
-        <div className="window">
-          <div className="window-title-bar">
-            <span>C:\\DistortedPixels.exe</span>
-            <div className="window-title-buttons">
-              <button className="window-btn">_</button>
-              <button className="window-btn">☐</button>
-              <button className="window-btn" style={{fontWeight: 'bold'}}>X</button>
+        {editorState.open && (
+          <div className="window">
+            <div className="window-title-bar">
+              <span>C:\\DistortedPixels.exe</span>
+              <div className="window-title-buttons">
+                <button className="window-btn" onClick={() => setEditorState(prev => ({...prev, minimized: !prev.minimized}))}>_</button>
+                <button className="window-btn">☐</button>
+                <button className="window-btn" style={{fontWeight: 'bold'}} onClick={() => setEditorState(prev => ({...prev, open: false}))}>X</button>
+              </div>
             </div>
-          </div>
-          <div className="window-content" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', background: 'var(--win-bg)', minHeight: '400px' }}>
-            {!imageSrc ? (
-              <ImageUploader onUpload={handleImageUpload} />
-            ) : (
-              <div className="canvas-container">
-                <CanvasPreview 
-                  imageSrc={imageSrc} 
-                  filters={filters} 
-                  jpegSettings={jpegSettings}
-                  canvasRef={canvasRef}
-                />
-                <button className="btn" onClick={handleClearImage} style={{marginTop: '1rem'}}>
-                  Clear Image
-                </button>
+            {!editorState.minimized && (
+              <div className="window-content" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', background: 'var(--win-bg)', minHeight: '400px' }}>
+                {!imageSrc ? (
+                  <ImageUploader onUpload={handleImageUpload} />
+                ) : (
+                  <div className="canvas-container">
+                    <CanvasPreview 
+                      imageSrc={imageSrc} 
+                      filters={filters} 
+                      jpegSettings={jpegSettings}
+                      canvasRef={canvasRef}
+                    />
+                    <button className="btn" onClick={handleClearImage} style={{marginTop: '1rem'}}>
+                      Clear Image
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
-        </div>
+        )}
 
-        <div className="window">
-          <div className="window-title-bar">
-            <span>Controls</span>
-            <div className="window-title-buttons">
-              <button className="window-btn">_</button>
-              <button className="window-btn">☐</button>
-              <button className="window-btn" style={{fontWeight: 'bold'}}>X</button>
+        {controlsState.open && (
+          <div className="window">
+            <div className="window-title-bar">
+              <span>Controls</span>
+              <div className="window-title-buttons">
+                <button className="window-btn" onClick={() => setControlsState(prev => ({...prev, minimized: !prev.minimized}))}>_</button>
+                <button className="window-btn">☐</button>
+                <button className="window-btn" style={{fontWeight: 'bold'}} onClick={() => setControlsState(prev => ({...prev, open: false}))}>X</button>
+              </div>
             </div>
+            {!controlsState.minimized && (
+              <div className="window-content" style={{background: 'var(--win-bg)'}}>
+                <Controls 
+                  filters={filters} 
+                  jpegSettings={jpegSettings}
+                  onChange={handleFilterChange} 
+                  onJpegChange={handleJpegSettingChange}
+                  onDownload={handleDownload}
+                  disabled={!imageSrc}
+                />
+              </div>
+            )}
           </div>
-          <div className="window-content" style={{background: 'var(--win-bg)'}}>
-            <Controls 
-              filters={filters} 
-              jpegSettings={jpegSettings}
-              onChange={handleFilterChange} 
-              onJpegChange={handleJpegSettingChange}
-              onDownload={handleDownload}
-              disabled={!imageSrc}
-            />
-          </div>
-        </div>
+        )}
       </main>
     </div>
   )
