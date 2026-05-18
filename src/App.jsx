@@ -29,6 +29,7 @@ function App() {
   
   // OS State
   const [openWindows, setOpenWindows] = useState([])
+  const [minimizedWindows, setMinimizedWindows] = useState([])
   const [deletedImages, setDeletedImages] = useState([]) // Array of { src: string, origin: 'canvas' | 'gallery' }
   const [savedImages, setSavedImages] = useState([])
   const [viewingImage, setViewingImage] = useState(null) // { src: string, index: number, source: 'gallery' | 'recycle-bin', origin?: string }
@@ -121,42 +122,61 @@ function App() {
     link.click()
   }
 
-  const openWindow = (id) => {
+  const toggleWindowVisibility = (id) => {
     if (!openWindows.includes(id)) {
-      setOpenWindows([...openWindows, id]);
+      setOpenWindows(prev => [...prev, id]);
+      setMinimizedWindows(prev => prev.filter(w => w !== id));
+    } else if (minimizedWindows.includes(id)) {
+      setMinimizedWindows(prev => prev.filter(w => w !== id));
+    } else {
+      setMinimizedWindows(prev => [...prev, id]);
     }
   }
 
+  const openWindow = (id) => {
+    if (!openWindows.includes(id)) {
+      setOpenWindows(prev => [...prev, id]);
+    }
+    setMinimizedWindows(prev => prev.filter(w => w !== id));
+  }
+
   const closeWindow = (id) => {
-    setOpenWindows(openWindows.filter(w => w !== id));
+    setOpenWindows(prev => prev.filter(w => w !== id));
+    setMinimizedWindows(prev => prev.filter(w => w !== id));
   }
 
   return (
     <div className="app-container">
       <div className="desktop-icon-container">
         <div className="desktop-icon" style={{background: 'var(--accent-blue)'}} onClick={() => {
-          setEditorState({ open: true, minimized: false });
-          setControlsState({ open: true, minimized: false });
+          const bothActive = editorState.open && !editorState.minimized && controlsState.open && !controlsState.minimized;
+          if (bothActive) {
+            setEditorState(prev => ({ ...prev, minimized: true }));
+            setControlsState(prev => ({ ...prev, minimized: true }));
+          } else {
+            setEditorState({ open: true, minimized: false });
+            setControlsState({ open: true, minimized: false });
+          }
         }}>
           <div style={{fontSize: '40px'}}>🎨</div>
           <span>Distorted Pixels</span>
         </div>
-        <div className="desktop-icon" style={{background: 'var(--accent-yellow)'}} onClick={() => openWindow('my-computer')}>
+        <div className="desktop-icon" style={{background: 'var(--accent-yellow)'}} onClick={() => toggleWindowVisibility('my-computer')}>
           <div style={{fontSize: '40px'}}>💻</div>
           <span>Computer</span>
         </div>
-        <div className="desktop-icon" style={{background: 'var(--accent-pink)'}} onClick={() => openWindow('recycle-bin')}>
+        <div className="desktop-icon" style={{background: 'var(--accent-pink)'}} onClick={() => toggleWindowVisibility('recycle-bin')}>
           <div style={{fontSize: '40px'}}>🗑️</div>
           <span>Trash</span>
         </div>
-        <div className="desktop-icon" style={{background: 'var(--accent-orange)'}} onClick={() => openWindow('media-player')}>
+        <div className="desktop-icon" style={{background: 'var(--accent-orange)'}} onClick={() => toggleWindowVisibility('media-player')}>
           <div style={{fontSize: '40px'}}>🎵</div>
           <span>Music</span>
         </div>
       </div>
 
       {openWindows.includes('recycle-bin') && (
-        <Window title="Recycle Bin" onClose={() => closeWindow('recycle-bin')} defaultPosition={{x: 100, y: 100}} width="500px">
+        <Window title="Recycle Bin" onClose={() => closeWindow('recycle-bin')} defaultPosition={{x: 100, y: 100}} width="500px" minimized={minimizedWindows.includes('recycle-bin')} onMinimize={() => toggleWindowVisibility('recycle-bin')}>
           <div style={{padding: '10px'}}>
             <button className="btn" onClick={() => {
               setFilters(DEFAULT_FILTERS);
@@ -190,7 +210,7 @@ function App() {
       )}
 
       {openWindows.includes('media-player') && (
-        <Window title="Music Player" onClose={() => closeWindow('media-player')} defaultPosition={{x: 50, y: 350}} width="350px">
+        <Window title="Music Player" onClose={() => closeWindow('media-player')} defaultPosition={{x: 50, y: 350}} width="350px" minimized={minimizedWindows.includes('media-player')} onMinimize={() => toggleWindowVisibility('media-player')}>
           <div style={{padding: '15px', background: 'var(--accent-yellow)'}}>
              <MediaPlayer />
           </div>
@@ -198,7 +218,7 @@ function App() {
       )}
 
       {openWindows.includes('my-computer') && (
-        <Window title="My Computer" onClose={() => closeWindow('my-computer')} defaultPosition={{x: 150, y: 80}} width="450px">
+        <Window title="My Computer" onClose={() => closeWindow('my-computer')} defaultPosition={{x: 150, y: 80}} width="450px" minimized={minimizedWindows.includes('my-computer')} onMinimize={() => toggleWindowVisibility('my-computer')}>
           <div className="grid-container">
              <div className="grid-item" onClick={() => openWindow('system-properties')}>
                <div style={{fontSize: '32px'}}>⚙️</div>
@@ -217,7 +237,7 @@ function App() {
       )}
 
       {openWindows.includes('system-properties') && (
-        <Window title="System Properties" onClose={() => closeWindow('system-properties')} defaultPosition={{x: 250, y: 150}} width="400px">
+        <Window title="System Properties" onClose={() => closeWindow('system-properties')} defaultPosition={{x: 250, y: 150}} width="400px" minimized={minimizedWindows.includes('system-properties')} onMinimize={() => toggleWindowVisibility('system-properties')}>
           <div style={{padding: '15px', display: 'flex', gap: '15px'}}>
              <div style={{fontSize: '48px'}}>💻</div>
              <div>
@@ -235,7 +255,7 @@ function App() {
       )}
 
       {openWindows.includes('c-drive') && (
-        <Window title="Local Disk (C:) - Samples" onClose={() => closeWindow('c-drive')} defaultPosition={{x: 200, y: 200}} width="500px">
+        <Window title="Local Disk (C:) - Samples" onClose={() => closeWindow('c-drive')} defaultPosition={{x: 200, y: 200}} width="500px" minimized={minimizedWindows.includes('c-drive')} onMinimize={() => toggleWindowVisibility('c-drive')}>
           <div style={{padding: '10px'}}>
             <p style={{marginBottom: '10px'}}>Double-click to load sample image:</p>
             <div className="grid-container">
@@ -257,7 +277,7 @@ function App() {
       )}
 
       {openWindows.includes('gallery') && (
-        <Window title="Gallery (D:) - Saved Images" onClose={() => closeWindow('gallery')} defaultPosition={{x: 300, y: 120}} width="500px">
+        <Window title="Gallery (D:) - Saved Images" onClose={() => closeWindow('gallery')} defaultPosition={{x: 300, y: 120}} width="500px" minimized={minimizedWindows.includes('gallery')} onMinimize={() => toggleWindowVisibility('gallery')}>
           <div style={{padding: '10px'}}>
              {savedImages.length === 0 ? (
                <p style={{color: '#666'}}>No images saved yet. Click "Save As..." to save here.</p>
@@ -287,6 +307,8 @@ function App() {
           }} 
           defaultPosition={{x: 350, y: 100}} 
           width="400px"
+          minimized={minimizedWindows.includes('image-viewer')}
+          onMinimize={() => toggleWindowVisibility('image-viewer')}
         >
           <div style={{padding: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px'}}>
             <img src={viewingImage.src} alt="Viewing" style={{maxWidth: '100%', border: '2px solid var(--win-border-dark)', boxShadow: 'inset 1px 1px var(--win-border-mid)'}} />
@@ -342,7 +364,7 @@ function App() {
 
       <main>
         {editorState.open && (
-          <div className="window">
+          <div className="window" style={{ display: editorState.minimized ? 'none' : 'flex' }}>
             <div className="window-title-bar">
               <span>C:\\DistortedPixels.exe</span>
               <div className="window-title-buttons">
@@ -351,30 +373,28 @@ function App() {
                 <button className="window-btn" style={{fontWeight: 'bold'}} onClick={() => setEditorState(prev => ({...prev, open: false}))}>X</button>
               </div>
             </div>
-            {!editorState.minimized && (
-              <div className="window-content" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', background: 'var(--win-bg)', minHeight: '400px' }}>
-                {!imageSrc ? (
-                  <ImageUploader onUpload={handleImageUpload} />
-                ) : (
-                  <div className="canvas-container">
-                    <CanvasPreview 
-                      imageSrc={imageSrc} 
-                      filters={filters} 
-                      jpegSettings={jpegSettings}
-                      canvasRef={canvasRef}
-                    />
-                    <button className="btn" onClick={handleClearImage} style={{marginTop: '1rem'}}>
-                      Clear Image
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
+            <div className="window-content" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', background: 'var(--win-bg)', minHeight: '400px' }}>
+              {!imageSrc ? (
+                <ImageUploader onUpload={handleImageUpload} />
+              ) : (
+                <div className="canvas-container">
+                  <CanvasPreview 
+                    imageSrc={imageSrc} 
+                    filters={filters} 
+                    jpegSettings={jpegSettings}
+                    canvasRef={canvasRef}
+                  />
+                  <button className="btn" onClick={handleClearImage} style={{marginTop: '1rem'}}>
+                    Clear Image
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
         {controlsState.open && (
-          <div className="window">
+          <div className="window" style={{ display: controlsState.minimized ? 'none' : 'flex' }}>
             <div className="window-title-bar">
               <span>Controls</span>
               <div className="window-title-buttons">
@@ -383,18 +403,16 @@ function App() {
                 <button className="window-btn" style={{fontWeight: 'bold'}} onClick={() => setControlsState(prev => ({...prev, open: false}))}>X</button>
               </div>
             </div>
-            {!controlsState.minimized && (
-              <div className="window-content" style={{background: 'var(--win-bg)'}}>
-                <Controls 
-                  filters={filters} 
-                  jpegSettings={jpegSettings}
-                  onChange={handleFilterChange} 
-                  onJpegChange={handleJpegSettingChange}
-                  onDownload={handleDownload}
-                  disabled={!imageSrc}
-                />
-              </div>
-            )}
+            <div className="window-content" style={{background: 'var(--win-bg)'}}>
+              <Controls 
+                filters={filters} 
+                jpegSettings={jpegSettings}
+                onChange={handleFilterChange} 
+                onJpegChange={handleJpegSettingChange}
+                onDownload={handleDownload}
+                disabled={!imageSrc}
+              />
+            </div>
           </div>
         )}
       </main>
