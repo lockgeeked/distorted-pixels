@@ -72,22 +72,24 @@ const MediaPlayer = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', alignItems: 'center' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', alignItems: 'center', width: '100%' }}>
       
       {/* Retro LCD Display */}
       <div style={{ 
-        background: '#000', 
-        color: '#0f0', 
+        background: '#000000', 
+        color: 'var(--accent-yellow)', 
         width: '100%', 
-        padding: '10px', 
+        padding: '12px 10px', 
         textAlign: 'center', 
-        border: '3px solid #000', 
-        fontFamily: 'monospace',
-        fontSize: '1.2rem',
+        border: 'var(--border-width) solid #000000', 
+        fontFamily: "'Bebas Neue', sans-serif",
+        fontSize: '1.8rem',
+        letterSpacing: '1.5px',
         textTransform: 'uppercase',
-        boxShadow: 'inset 2px 2px 0px #333',
+        boxShadow: 'inset 3px 3px 0px rgba(255, 255, 255, 0.2)',
         overflow: 'hidden',
-        whiteSpace: 'nowrap'
+        whiteSpace: 'nowrap',
+        borderRadius: '12px'
       }}>
         {isPlaying ? (
           <marquee scrollamount="5">▶ NOW PLAYING: TRACK {currentTrackIndex + 1} / {TRACKS.length} </marquee>
@@ -98,16 +100,16 @@ const MediaPlayer = () => {
       
       {/* Controls */}
       <div style={{ display: 'flex', gap: '10px', width: '100%', justifyContent: 'center' }}>
-        <button className="btn" onClick={prevTrack} style={{ padding: '10px 15px' }}>⏮️</button>
-        <button className="btn" onClick={togglePlay} style={{ background: 'var(--accent-pink)', padding: '10px 25px' }}>
-          {isPlaying ? '⏸️' : '▶️'}
+        <button className="btn" onClick={prevTrack} style={{ width: '50px', height: '50px', padding: 0, borderRadius: '50%' }}>⏮</button>
+        <button className="btn" onClick={togglePlay} style={{ background: 'var(--accent-orange)', width: '70px', height: '50px', padding: 0 }}>
+          {isPlaying ? '⏸' : '▶'}
         </button>
-        <button className="btn" onClick={nextTrack} style={{ padding: '10px 15px' }}>⏭️</button>
+        <button className="btn" onClick={nextTrack} style={{ width: '50px', height: '50px', padding: 0, borderRadius: '50%' }}>⏭</button>
       </div>
 
       {/* Seek Bar */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', marginTop: '5px' }}>
-        <span style={{ fontFamily: 'monospace', fontSize: '0.9rem' }}>{formatTime(currentTime)}</span>
+        <span style={{ fontFamily: 'monospace', fontSize: '0.9rem', fontWeight: 'bold' }}>{formatTime(currentTime)}</span>
         <input 
           type="range" 
           min="0" 
@@ -115,14 +117,14 @@ const MediaPlayer = () => {
           step="0.1" 
           value={currentTime} 
           onChange={handleSeek}
-          style={{ flex: 1, margin: 0, height: '5px', cursor: 'pointer' }}
+          style={{ flex: 1 }}
         />
-        <span style={{ fontFamily: 'monospace', fontSize: '0.9rem' }}>{formatTime(duration)}</span>
+        <span style={{ fontFamily: 'monospace', fontSize: '0.9rem', fontWeight: 'bold' }}>{formatTime(duration)}</span>
       </div>
 
       {/* Volume Slider */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', marginTop: '5px' }}>
-        <span style={{fontWeight: 'bold'}}>🔈</span>
+        <span style={{ fontSize: '1.2rem' }}>🔈</span>
         <input 
           type="range" 
           min="0" 
@@ -130,9 +132,9 @@ const MediaPlayer = () => {
           step="0.01" 
           value={volume} 
           onChange={(e) => setVolume(parseFloat(e.target.value))}
-          style={{ flex: 1, margin: 0 }}
+          style={{ flex: 1 }}
         />
-        <span style={{fontWeight: 'bold'}}>🔊</span>
+        <span style={{ fontSize: '1.2rem' }}>🔊</span>
       </div>
 
       {/* Native HTML5 Audio */}

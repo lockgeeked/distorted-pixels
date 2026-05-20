@@ -147,6 +147,72 @@ function App() {
 
   return (
     <div className="app-container">
+      <header className="site-header">
+        <div className="site-header-top">
+          <div className="site-header-socials">
+            <a href="https://github.com/lockgeeked/distorted-pixels" target="_blank" rel="noopener noreferrer" className="social-btn" title="GitHub">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
+              </svg>
+            </a>
+            <button className="social-btn" title="Music Player" onClick={() => toggleWindowVisibility('media-player')}>
+              🎵
+            </button>
+            <button className="social-btn" title="Trash" onClick={() => toggleWindowVisibility('recycle-bin')}>
+              🗑️
+            </button>
+          </div>
+          <div className="site-header-logo">
+            + DISTORTED + PIXELS
+          </div>
+          <div className="site-header-badge">
+            OS V4.0.95
+          </div>
+        </div>
+        <nav className="site-header-nav">
+          <button 
+            className={`nav-link ${editorState.open && !editorState.minimized ? 'active' : ''}`}
+            onClick={() => {
+              setEditorState({ open: true, minimized: false });
+              setControlsState({ open: true, minimized: false });
+            }}
+          >
+            Editor
+          </button>
+          <button 
+            className={`nav-link ${openWindows.includes('my-computer') && !minimizedWindows.includes('my-computer') ? 'active' : ''}`}
+            onClick={() => toggleWindowVisibility('my-computer')}
+          >
+            Computer
+          </button>
+          <button 
+            className={`nav-link ${openWindows.includes('media-player') && !minimizedWindows.includes('media-player') ? 'active' : ''}`}
+            onClick={() => toggleWindowVisibility('media-player')}
+          >
+            Music
+          </button>
+          <button 
+            className={`nav-link ${openWindows.includes('recycle-bin') && !minimizedWindows.includes('recycle-bin') ? 'active' : ''}`}
+            onClick={() => toggleWindowVisibility('recycle-bin')}
+          >
+            Trash
+          </button>
+          <button 
+            className="nav-link"
+            onClick={() => {
+              setFilters(DEFAULT_FILTERS);
+              setJpegSettings(DEFAULT_JPEG_SETTINGS);
+              setDeletedImages([]);
+              if (imageSrc) setImageSrc(null);
+              alert("System reset complete.");
+            }}
+            style={{ color: 'var(--accent-orange)' }}
+          >
+            Reset OS
+          </button>
+        </nav>
+      </header>
+
       <div className="desktop-icon-container">
         <div className="desktop-icon" style={{background: 'var(--accent-blue)'}} onClick={() => {
           const bothActive = editorState.open && !editorState.minimized && controlsState.open && !controlsState.minimized;
