@@ -3,7 +3,7 @@
 /* Define Themes in CSS Variables */
 :root {
   /* Classic Brutalist Theme (Default) */
-  --bg-color: #008080; /* Classic Win95 Teal Green */
+  --bg-color: #000000; /* Pitch Black */
   --win-bg: #ffffff;
   --win-text: #000000;
   --border-color: #000000;

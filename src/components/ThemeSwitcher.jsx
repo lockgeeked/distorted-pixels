@@ -4,10 +4,10 @@ const THEMES = [
   {
     id: 'classic',
     name: 'Classic Brutalist',
-    bg: '#008080',
+    bg: '#000000',
     accent: '#ff90e8',
     text: '#000000',
-    description: 'Classic Windows 95 teal green with sharp-cornered brutalist OS design.',
+    description: 'Classic sharp-cornered brutalist OS design with a pitch black background.',
     previewTitleFont: "'Space Grotesk', sans-serif"
   },
   {
