@@ -98,8 +98,8 @@
 
 /* Cyberpunk Dark Mode variables */
 .theme-dark {
-  --bg-color: #121214;
-  --win-bg: #1e1e24;
+  --bg-color: #000000;
+  --win-bg: #111115;
   --win-text: #ffffff;
   --border-color: #bd93f9; /* Glowing purple border */
   --shadow-color: #000000;
@@ -135,7 +135,7 @@
   --slider-thumb-bg: var(--accent-blue);
   --checkbox-checked-bg: var(--accent-pink);
   
-  --lcd-bg: #121214;
+  --lcd-bg: #000000;
   --lcd-text: #ff79c6;
   
   --main-padding-left: 170px;
