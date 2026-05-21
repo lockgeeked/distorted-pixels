@@ -101,7 +101,7 @@ const Controls = ({ filters, jpegSettings, onChange, onJpegChange, onDownload, d
 
         <div className="control-item" style={{marginTop: '1.5rem', marginBottom: '0'}}>
            <label style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
-             <span style={{flex: 1, color: '#000', fontWeight: 'bold'}}>Apply Compression</span>
+             <span style={{flex: 1, color: 'var(--win-text)', fontWeight: 'bold'}}>Apply Compression</span>
              <div className="checkbox-container">
               <input 
                 type="checkbox" 
@@ -114,9 +114,9 @@ const Controls = ({ filters, jpegSettings, onChange, onJpegChange, onDownload, d
         </div>
       </div>
 
-      <h2 style={{ marginBottom: '1rem', borderBottom: '1px solid var(--win-border-dark)', paddingBottom: '0.2rem', marginTop: '1.5rem', color: '#000' }}>Quick Apply</h2>
+      <h2 style={{ marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.2rem', marginTop: '1.5rem', color: 'var(--win-text)' }}>Quick Apply</h2>
       
-      <div className="controls-group" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', background: '#e0e0e0' }}>
+      <div className="controls-group quick-apply-group" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <h3 style={{ marginBottom: 0 }}>
           <span>Frying</span>
           <div className="checkbox-container">
@@ -141,7 +141,7 @@ const Controls = ({ filters, jpegSettings, onChange, onJpegChange, onDownload, d
         </h3>
       </div>
 
-      <h2 style={{ marginBottom: '1rem', borderBottom: '1px solid var(--win-border-dark)', paddingBottom: '0.2rem', marginTop: '1.5rem', color: '#000' }}>Extra Filters</h2>
+      <h2 style={{ marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.2rem', marginTop: '1.5rem', color: 'var(--win-text)' }}>Extra Filters</h2>
       
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
         {renderControlGroup('Deep Fry', 'deepFry')}

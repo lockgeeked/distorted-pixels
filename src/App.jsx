@@ -5,6 +5,7 @@ import CanvasPreview from './components/CanvasPreview'
 import Controls from './components/Controls'
 import Window from './components/Window'
 import MediaPlayer from './components/MediaPlayer'
+import ThemeSwitcher from './components/ThemeSwitcher'
 
 const DEFAULT_FILTERS = {
   deepFry: { active: false, intensity: 50 },
@@ -26,6 +27,11 @@ function App() {
   const [imageSrc, setImageSrc] = useState(null)
   const [filters, setFilters] = useState(DEFAULT_FILTERS)
   const [jpegSettings, setJpegSettings] = useState(DEFAULT_JPEG_SETTINGS)
+  const [theme, setTheme] = useState(() => localStorage.getItem('distorted-pixels-theme') || 'classic')
+
+  useEffect(() => {
+    localStorage.setItem('distorted-pixels-theme', theme);
+  }, [theme])
   
   // OS State
   const [openWindows, setOpenWindows] = useState([])
@@ -146,7 +152,66 @@ function App() {
   }
 
   return (
-    <div className="app-container">
+    <div className={`app-container theme-${theme}`}>
+      <header className="site-header">
+        <div className="site-header-top">
+          <div className="site-header-socials">
+            <a href="https://github.com/lockgeeked/distorted-pixels" target="_blank" rel="noopener noreferrer" className="social-btn" title="GitHub">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
+              </svg>
+            </a>
+            <button className="social-btn" title="Music Player" onClick={() => toggleWindowVisibility('media-player')}>
+              🎵
+            </button>
+            <button className="social-btn" title="Theme Settings" onClick={() => toggleWindowVisibility('theme-switcher')}>
+              🌈
+            </button>
+          </div>
+          <div className="site-header-logo">
+            + DISTORTED + PIXELS
+          </div>
+          <div className="site-header-badge">
+            OS V4.0.95
+          </div>
+        </div>
+        <nav className="site-header-nav">
+          <button 
+            className={`nav-link ${editorState.open && !editorState.minimized ? 'active' : ''}`}
+            onClick={() => {
+              setEditorState({ open: true, minimized: false });
+              setControlsState({ open: true, minimized: false });
+            }}
+          >
+            Editor
+          </button>
+          <button 
+            className={`nav-link ${openWindows.includes('my-computer') && !minimizedWindows.includes('my-computer') ? 'active' : ''}`}
+            onClick={() => toggleWindowVisibility('my-computer')}
+          >
+            Computer
+          </button>
+          <button 
+            className={`nav-link ${openWindows.includes('media-player') && !minimizedWindows.includes('media-player') ? 'active' : ''}`}
+            onClick={() => toggleWindowVisibility('media-player')}
+          >
+            Music
+          </button>
+          <button 
+            className={`nav-link ${openWindows.includes('theme-switcher') && !minimizedWindows.includes('theme-switcher') ? 'active' : ''}`}
+            onClick={() => toggleWindowVisibility('theme-switcher')}
+          >
+            Themes
+          </button>
+          <button 
+            className={`nav-link ${openWindows.includes('recycle-bin') && !minimizedWindows.includes('recycle-bin') ? 'active' : ''}`}
+            onClick={() => toggleWindowVisibility('recycle-bin')}
+          >
+            Trash
+          </button>
+        </nav>
+      </header>
+
       <div className="desktop-icon-container">
         <div className="desktop-icon" style={{background: 'var(--accent-blue)'}} onClick={() => {
           const bothActive = editorState.open && !editorState.minimized && controlsState.open && !controlsState.minimized;
@@ -165,7 +230,11 @@ function App() {
           <div style={{fontSize: '40px'}}>💻</div>
           <span>Computer</span>
         </div>
-        <div className="desktop-icon" style={{background: 'var(--accent-pink)'}} onClick={() => toggleWindowVisibility('recycle-bin')}>
+        <div className="desktop-icon" style={{background: 'var(--accent-pink)'}} onClick={() => toggleWindowVisibility('theme-switcher')}>
+          <div style={{fontSize: '40px'}}>🌈</div>
+          <span>Themes</span>
+        </div>
+        <div className="desktop-icon" style={{background: 'var(--accent-purple)'}} onClick={() => toggleWindowVisibility('recycle-bin')}>
           <div style={{fontSize: '40px'}}>🗑️</div>
           <span>Trash</span>
         </div>
@@ -224,6 +293,10 @@ function App() {
                <div style={{fontSize: '32px'}}>⚙️</div>
                <span>System Properties</span>
              </div>
+             <div className="grid-item" onClick={() => openWindow('theme-switcher')}>
+               <div style={{fontSize: '32px'}}>🌈</div>
+               <span>Theme Settings</span>
+             </div>
              <div className="grid-item" onClick={() => openWindow('c-drive')}>
                <div style={{fontSize: '32px'}}>💾</div>
                <span>Local Disk (C:)</span>
@@ -232,6 +305,14 @@ function App() {
                <div style={{fontSize: '32px'}}>🖼️</div>
                <span>Gallery (D:)</span>
              </div>
+          </div>
+        </Window>
+      )}
+
+      {openWindows.includes('theme-switcher') && (
+        <Window title="Theme Settings" onClose={() => closeWindow('theme-switcher')} defaultPosition={{x: 300, y: 120}} width="450px" minimized={minimizedWindows.includes('theme-switcher')} onMinimize={() => toggleWindowVisibility('theme-switcher')}>
+          <div style={{padding: '15px'}}>
+            <ThemeSwitcher currentTheme={theme} onThemeChange={setTheme} />
           </div>
         </Window>
       )}
