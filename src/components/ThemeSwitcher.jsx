@@ -4,10 +4,10 @@ const THEMES = [
   {
     id: 'classic',
     name: 'Classic Brutalist',
-    bg: '#55c57a',
+    bg: '#008080',
     accent: '#ff90e8',
     text: '#000000',
-    description: 'The original mint green, sharp-cornered brutalist OS design.',
+    description: 'Classic Windows 95 teal green with sharp-cornered brutalist OS design.',
     previewTitleFont: "'Space Grotesk', sans-serif"
   },
   {
@@ -22,10 +22,10 @@ const THEMES = [
   {
     id: 'dark',
     name: 'Cyberpunk Dark',
-    bg: '#121214',
+    bg: '#000000',
     accent: '#bd93f9',
     text: '#ffffff',
-    description: 'Deep charcoal background, purple glowing accents, and neon elements.',
+    description: 'Deep pitch black background, purple glowing accents, and neon elements.',
     previewTitleFont: "'Space Grotesk', sans-serif"
   }
 ];
