@@ -784,3 +784,283 @@ select:focus {
   background: var(--win-bg);
   border: var(--border-width) solid var(--border-color);
 }
+
+/* App Container padding adjustment */
+.app-container {
+  padding-bottom: 90px !important;
+}
+
+/* Taskbar styling */
+.taskbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 54px;
+  background: var(--win-bg);
+  color: var(--win-text);
+  border-top: var(--border-width) solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  z-index: 9999;
+  font-family: var(--body-font), sans-serif;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+}
+
+/* Cyberpunk Glow in Dark Theme */
+.theme-dark .taskbar {
+  box-shadow: 0 -4px 15px rgba(189, 147, 249, 0.3);
+}
+
+/* Taskbar Buttons (Start and Window tabs) */
+.taskbar-btn {
+  font-family: var(--title-font), sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 6px 16px;
+  background: var(--win-bg);
+  color: var(--win-text);
+  border: var(--border-width) solid var(--border-color);
+  box-shadow: 3px 3px 0px var(--shadow-color);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--btn-radius);
+}
+
+.taskbar-btn:hover {
+  background: var(--accent-pink);
+  color: #000;
+}
+
+.taskbar-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px var(--shadow-color);
+}
+
+.start-btn {
+  background: var(--accent-yellow);
+  color: #000;
+}
+
+.theme-dark .start-btn {
+  background: var(--accent-purple);
+  color: #000;
+}
+
+/* Windows tabs container */
+.taskbar-windows {
+  display: flex;
+  gap: 12px;
+  flex: 1;
+  margin: 0 20px;
+  overflow-x: auto;
+  scrollbar-width: none; /* Hide scrollbar for clean OS look */
+}
+
+.taskbar-windows::-webkit-scrollbar {
+  display: none;
+}
+
+.window-tab {
+  max-width: 160px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.window-tab.active {
+  background: var(--accent-purple);
+  color: #ffffff;
+}
+
+.theme-dark .window-tab.active {
+  background: var(--accent-pink);
+  color: #000000;
+}
+
+.theme-weirdos .window-tab.active {
+  background: var(--accent-orange);
+  color: #ffffff;
+}
+
+/* Start Menu Pop-up */
+.taskbar-start-container {
+  position: relative;
+}
+
+.start-menu {
+  position: absolute;
+  bottom: 60px;
+  left: 0;
+  width: 250px;
+  background: var(--win-bg);
+  border: var(--border-width) solid var(--border-color);
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0px var(--shadow-color);
+  border-radius: var(--card-radius);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.start-menu-header {
+  background: var(--title-bg);
+  color: var(--title-text);
+  padding: 12px;
+  font-family: var(--title-font), sans-serif;
+  font-weight: 700;
+  font-size: 1.2rem;
+  border-bottom: var(--border-width) solid var(--border-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.start-menu-items {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+}
+
+.start-menu-item {
+  background: none;
+  border: none;
+  color: var(--win-text);
+  padding: 10px 20px;
+  text-align: left;
+  font-family: var(--body-font), sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: background-color 0.15s;
+}
+
+.start-menu-item:hover {
+  background-color: var(--accent-blue);
+  color: #000;
+}
+
+.start-menu-divider {
+  height: var(--border-width);
+  background-color: var(--border-color);
+  margin: 6px 0;
+}
+
+/* System Tray Clock Area */
+.taskbar-tray {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: var(--win-bg);
+  border: var(--border-width) solid var(--border-color);
+  padding: 4px 14px;
+  box-shadow: inset 2px 2px 0px rgba(0,0,0,0.1);
+  border-radius: var(--btn-radius);
+  font-family: var(--title-font), sans-serif;
+}
+
+.tray-icons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.1rem;
+}
+
+.cd-spin-tray {
+  display: inline-block;
+  animation: spin 3s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.tray-clock {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--win-text);
+}
+
+.tray-day {
+  background: var(--accent-orange);
+  color: #fff;
+  padding: 2px 6px;
+  font-size: 0.85rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.theme-dark .tray-day {
+  color: #000;
+  font-weight: 800;
+}
+
+.tray-date {
+  opacity: 0.85;
+  font-size: 0.95rem;
+}
+
+.tray-time {
+  font-variant-numeric: tabular-nums;
+  background: var(--lcd-bg, #000000);
+  color: var(--lcd-text, #00ff00);
+  padding: 2px 8px;
+  font-family: monospace;
+  font-size: 1rem;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+}
+
+/* Header clock badge styling */
+.header-clock-badge {
+  background: var(--win-bg) !important;
+  color: var(--win-text) !important;
+  border: var(--border-width) solid var(--border-color);
+  box-shadow: 3px 3px 0px var(--accent-blue) !important;
+}
+
+.theme-weirdos .header-clock-badge {
+  box-shadow: 3px 3px 0px var(--accent-pink) !important;
+}
+
+/* Responsiveness for taskbar */
+@media (max-width: 768px) {
+  .taskbar {
+    padding: 0 10px;
+    height: 58px;
+  }
+  .taskbar-windows {
+    margin: 0 8px;
+  }
+  .window-tab {
+    display: none; /* Hide window tabs on very small viewports */
+  }
+  .tray-clock .tray-day,
+  .tray-clock .tray-date {
+    display: none; /* Only show time on small screens */
+  }
+}

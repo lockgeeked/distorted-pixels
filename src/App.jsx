@@ -44,6 +44,32 @@ function App() {
   const [editorState, setEditorState] = useState({ open: true, minimized: false })
   const [controlsState, setControlsState] = useState({ open: true, minimized: false })
 
+  // Clock & Taskbar State
+  const [currentTime, setCurrentTime] = useState(new Date())
+  const [showStartMenu, setShowStartMenu] = useState(false)
+  const startMenuRef = useRef(null)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date())
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [])
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (startMenuRef.current && 
+          !startMenuRef.current.contains(event.target) && 
+          !event.target.closest('.start-btn')) {
+        setShowStartMenu(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+
   const canvasRef = useRef(null)
 
   useEffect(() => {
@@ -173,6 +199,9 @@ function App() {
           </div>
           <div className="site-header-badge">
             OS V4.0.95
+          </div>
+          <div className="site-header-badge header-clock-badge">
+            📅 {currentTime.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })} | ⏰ {currentTime.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
           </div>
         </div>
         <nav className="site-header-nav">
@@ -497,6 +526,111 @@ function App() {
           </div>
         )}
       </main>
+
+      {/* Taskbar */}
+      <footer className="taskbar">
+        <div className="taskbar-start-container">
+          <button className="taskbar-btn start-btn" onClick={() => setShowStartMenu(prev => !prev)}>
+            <span style={{ marginRight: '6px' }}>👾</span> Start
+          </button>
+          
+          {showStartMenu && (
+            <div className="start-menu" ref={startMenuRef}>
+              <div className="start-menu-header">
+                <span>Distorted Pixels OS</span>
+              </div>
+              <div className="start-menu-items">
+                <button className="start-menu-item" onClick={() => { openWindow('my-computer'); setShowStartMenu(false); }}>
+                  💻 Computer
+                </button>
+                <button className="start-menu-item" onClick={() => { openWindow('theme-switcher'); setShowStartMenu(false); }}>
+                  🌈 Themes
+                </button>
+                <button className="start-menu-item" onClick={() => { openWindow('recycle-bin'); setShowStartMenu(false); }}>
+                  🗑️ Trash
+                </button>
+                <button className="start-menu-item" onClick={() => { openWindow('media-player'); setShowStartMenu(false); }}>
+                  🎵 Music Player
+                </button>
+                <button className="start-menu-item" onClick={() => { 
+                  setEditorState({ open: true, minimized: false });
+                  setControlsState({ open: true, minimized: false });
+                  setShowStartMenu(false); 
+                }}>
+                  🎨 Editor
+                </button>
+                <div className="start-menu-divider" />
+                <button className="start-menu-item" onClick={() => { openWindow('system-properties'); setShowStartMenu(false); }}>
+                  ⚙️ System Properties
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="taskbar-windows">
+          {/* Editor window tab */}
+          {editorState.open && (
+            <button 
+              className={`taskbar-btn window-tab ${!editorState.minimized ? 'active' : ''}`}
+              onClick={() => setEditorState(prev => ({ ...prev, minimized: !prev.minimized }))}
+            >
+              🎨 Editor
+            </button>
+          )}
+
+          {/* Controls window tab */}
+          {controlsState.open && (
+            <button 
+              className={`taskbar-btn window-tab ${!controlsState.minimized ? 'active' : ''}`}
+              onClick={() => setControlsState(prev => ({ ...prev, minimized: !prev.minimized }))}
+            >
+              🎛️ Controls
+            </button>
+          )}
+
+          {/* Floating windows */}
+          {openWindows.map(winId => {
+            const getWinTitle = (id) => {
+              switch(id) {
+                case 'my-computer': return '💻 Computer';
+                case 'media-player': return '🎵 Music';
+                case 'theme-switcher': return '🌈 Themes';
+                case 'recycle-bin': return '🗑️ Trash';
+                case 'system-properties': return '⚙️ System';
+                case 'c-drive': return '💾 Drive C';
+                case 'gallery': return '🖼️ Gallery';
+                case 'image-viewer': return '👁️ Viewer';
+                default: return id;
+              }
+            };
+            const isMinimized = minimizedWindows.includes(winId);
+            return (
+              <button 
+                key={winId}
+                className={`taskbar-btn window-tab ${!isMinimized ? 'active' : ''}`}
+                onClick={() => toggleWindowVisibility(winId)}
+              >
+                {getWinTitle(winId)}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="taskbar-tray">
+          <div className="tray-icons">
+            <span title="Volume 100%" style={{ cursor: 'pointer' }}>🔊</span>
+            {openWindows.includes('media-player') && (
+              <span title="Music playing" className="cd-spin-tray" style={{ display: 'inline-block' }}>💿</span>
+            )}
+          </div>
+          <div className="tray-clock" title={currentTime.toDateString()}>
+            <span className="tray-day">{currentTime.toLocaleDateString(undefined, { weekday: 'short' })}</span>
+            <span className="tray-date">{currentTime.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+            <span className="tray-time">{currentTime.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
