@@ -257,6 +257,8 @@ body {
   padding: 4px 12px;
   border-radius: 8px;
   transition: background-color 0.15s;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .nav-link:hover {
@@ -306,6 +308,8 @@ body {
   font-size: 1.3rem;
   border-bottom: var(--border-width) solid var(--border-color);
   letter-spacing: 0.5px;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .window-title-buttons {
@@ -667,6 +671,8 @@ select:focus {
   box-shadow: 6px 6px 0px var(--shadow-color);
   transition: transform 0.1s, box-shadow 0.1s;
   border-radius: var(--card-radius);
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .desktop-icon:active {
@@ -808,6 +814,8 @@ select:focus {
   font-family: var(--body-font), sans-serif;
   box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.15);
   transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 /* Cyberpunk Glow in Dark Theme */
@@ -831,6 +839,8 @@ select:focus {
   align-items: center;
   justify-content: center;
   border-radius: var(--btn-radius);
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .taskbar-btn:hover {
