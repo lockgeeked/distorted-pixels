@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-const CanvasPreview = ({ imageSrc, filters, jpegSettings, canvasRef }) => {
+const CanvasPreview = ({ imageSrc, filters, jpegSettings, canvasRef, doodleSrc, memeText }) => {
   const [imageObj, setImageObj] = useState(null);
 
   useEffect(() => {
@@ -43,6 +43,104 @@ const CanvasPreview = ({ imageSrc, filters, jpegSettings, canvasRef }) => {
 
       // Draw initial image
       ctx.drawImage(imageObj, 0, 0, width, height);
+
+      // Draw Doodle drawing overlay
+      if (doodleSrc) {
+        await new Promise(resolve => {
+          const doodleImg = new Image();
+          doodleImg.onload = () => {
+            ctx.drawImage(doodleImg, 0, 0, width, height);
+            resolve();
+          };
+          doodleImg.src = doodleSrc;
+        });
+      }
+
+      // Draw Meme and WordArt Text overlays
+      if (memeText) {
+        if (memeText.topText) {
+          ctx.font = `bold ${Math.floor(height * 0.1)}px Impact, "Arial Black", sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'top';
+          ctx.fillStyle = '#ffffff';
+          ctx.strokeStyle = '#000000';
+          ctx.lineWidth = Math.max(2, Math.floor(height * 0.015));
+          
+          const x = width / 2;
+          const y = height * 0.05;
+          ctx.fillText(memeText.topText.toUpperCase(), x, y);
+          ctx.strokeText(memeText.topText.toUpperCase(), x, y);
+        }
+
+        if (memeText.bottomText) {
+          ctx.font = `bold ${Math.floor(height * 0.1)}px Impact, "Arial Black", sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'bottom';
+          ctx.fillStyle = '#ffffff';
+          ctx.strokeStyle = '#000000';
+          ctx.lineWidth = Math.max(2, Math.floor(height * 0.015));
+          
+          const x = width / 2;
+          const y = height * 0.95;
+          ctx.fillText(memeText.bottomText.toUpperCase(), x, y);
+          ctx.strokeText(memeText.bottomText.toUpperCase(), x, y);
+        }
+
+        if (memeText.wordArtText) {
+          ctx.font = `italic bold ${Math.floor(height * 0.12)}px "Arial Black", sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          
+          const x = width / 2;
+          const y = height * 0.5;
+          
+          let gradient;
+          const style = memeText.wordArtStyle || 'rainbow';
+          if (style === 'rainbow') {
+            gradient = ctx.createLinearGradient(x - width/3, y, x + width/3, y);
+            gradient.addColorStop(0, 'red');
+            gradient.addColorStop(0.15, 'orange');
+            gradient.addColorStop(0.3, 'yellow');
+            gradient.addColorStop(0.45, 'green');
+            gradient.addColorStop(0.6, 'blue');
+            gradient.addColorStop(0.8, 'indigo');
+            gradient.addColorStop(1, 'violet');
+          } else if (style === 'sunset') {
+            gradient = ctx.createLinearGradient(x, y - height/10, x, y + height/10);
+            gradient.addColorStop(0, '#ff3300');
+            gradient.addColorStop(0.5, '#ff9900');
+            gradient.addColorStop(1, '#ffff00');
+          } else if (style === 'chrome') {
+            gradient = ctx.createLinearGradient(x, y - height/10, x, y + height/10);
+            gradient.addColorStop(0, '#ffffff');
+            gradient.addColorStop(0.45, '#cccccc');
+            gradient.addColorStop(0.5, '#000000');
+            gradient.addColorStop(0.55, '#3399ff');
+            gradient.addColorStop(1, '#113355');
+          } else { // neon
+            gradient = '#00ffff';
+          }
+          
+          ctx.fillStyle = gradient;
+          ctx.strokeStyle = style === 'neon' ? '#ff00ff' : '#000000';
+          ctx.lineWidth = Math.max(2, Math.floor(height * 0.02));
+          
+          // Retro Shadow
+          ctx.shadowColor = 'rgba(0,0,0,0.6)';
+          ctx.shadowBlur = 10;
+          ctx.shadowOffsetX = 6;
+          ctx.shadowOffsetY = 6;
+          
+          ctx.fillText(memeText.wordArtText, x, y);
+          ctx.strokeText(memeText.wordArtText, x, y);
+          
+          // Reset shadow
+          ctx.shadowColor = 'transparent';
+          ctx.shadowBlur = 0;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 0;
+        }
+      }
 
       // Apply filters
       let imageData = ctx.getImageData(0, 0, width, height);
@@ -218,7 +316,7 @@ const CanvasPreview = ({ imageSrc, filters, jpegSettings, canvasRef }) => {
     return () => {
       isCancelled = true;
     };
-  }, [imageObj, filters, jpegSettings, canvasRef]);
+  }, [imageObj, filters, jpegSettings, canvasRef, doodleSrc, memeText]);
 
   return (
     <div className="canvas-wrapper">

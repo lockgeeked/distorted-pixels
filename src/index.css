@@ -1074,3 +1074,48 @@ select:focus {
     display: none; /* Only show time on small screens */
   }
 }
+
+/* Paint Component Styles */
+.paint-controls .btn.active {
+  background: var(--accent-purple) !important;
+  color: #fff !important;
+}
+
+.theme-weirdos .paint-controls .btn.active {
+  background: var(--accent-orange) !important;
+  color: #fff !important;
+}
+
+.theme-dark .paint-controls .btn.active {
+  background: var(--accent-pink) !important;
+  color: #000 !important;
+}
+
+/* Terminal Styling */
+.terminal-window::-webkit-scrollbar {
+  width: 8px;
+}
+.terminal-window::-webkit-scrollbar-track {
+  background: #000;
+}
+.terminal-window::-webkit-scrollbar-thumb {
+  background: #333;
+  border: 1px solid #39ff14;
+}
+
+/* BSOD Crash Animation Overlay */
+.bsod-overlay {
+  animation: bsodFlash 0.15s ease-out;
+}
+
+@keyframes bsodFlash {
+  0% { opacity: 0; background: #fff; }
+  20% { opacity: 1; background: #000; }
+  40% { background: #ff0000; }
+  100% { background: #0000aa; }
+}
+
+/* Webcam Booth Styles */
+.webcam-booth video {
+  transform: scaleX(-1); /* Mirror camera preview for natural feeling */
+}

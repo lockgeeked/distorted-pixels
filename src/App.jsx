@@ -6,6 +6,9 @@ import Controls from './components/Controls'
 import Window from './components/Window'
 import MediaPlayer from './components/MediaPlayer'
 import ThemeSwitcher from './components/ThemeSwitcher'
+import Paint from './components/Paint'
+import Terminal from './components/Terminal'
+import MemeTextEditor from './components/MemeTextEditor'
 
 const DEFAULT_FILTERS = {
   deepFry: { active: false, intensity: 50 },
@@ -39,6 +42,15 @@ function App() {
   const [deletedImages, setDeletedImages] = useState([]) // Array of { src: string, origin: 'canvas' | 'gallery' }
   const [savedImages, setSavedImages] = useState([])
   const [viewingImage, setViewingImage] = useState(null) // { src: string, index: number, source: 'gallery' | 'recycle-bin', origin?: string }
+  const [doodleSrc, setDoodleSrc] = useState(null)
+  const [memeText, setMemeText] = useState({
+    topText: '',
+    bottomText: '',
+    wordArtText: '',
+    wordArtStyle: 'rainbow'
+  })
+  const [isSystemGlitched, setIsSystemGlitched] = useState(false)
+  const [glitchProgress, setGlitchProgress] = useState(0)
 
   // Main Panel State
   const [editorState, setEditorState] = useState({ open: true, minimized: false })
@@ -69,6 +81,23 @@ function App() {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
+
+  useEffect(() => {
+    if (isSystemGlitched) {
+      setGlitchProgress(0);
+      const interval = setInterval(() => {
+        setGlitchProgress(prev => {
+          if (prev >= 100) {
+            clearInterval(interval);
+            setIsSystemGlitched(false);
+            return 0;
+          }
+          return prev + 5;
+        });
+      }, 200);
+      return () => clearInterval(interval);
+    }
+  }, [isSystemGlitched]);
 
   const canvasRef = useRef(null)
 
@@ -271,6 +300,18 @@ function App() {
           <div style={{fontSize: '40px'}}>🎵</div>
           <span>Music</span>
         </div>
+        <div className="desktop-icon" style={{background: 'var(--accent-green)'}} onClick={() => toggleWindowVisibility('paint')}>
+          <div style={{fontSize: '40px'}}>🖌️</div>
+          <span>Paint.exe</span>
+        </div>
+        <div className="desktop-icon" style={{background: '#111', border: 'var(--border-width) solid #39ff14'}} onClick={() => toggleWindowVisibility('terminal')}>
+          <div style={{fontSize: '40px', color: '#39ff14'}}>📟</div>
+          <span style={{color: '#39ff14'}}>Command.com</span>
+        </div>
+        <div className="desktop-icon" style={{background: 'var(--accent-yellow)'}} onClick={() => toggleWindowVisibility('meme-text')}>
+          <div style={{fontSize: '40px'}}>📝</div>
+          <span>Meme Text</span>
+        </div>
       </div>
 
       {openWindows.includes('recycle-bin') && (
@@ -472,6 +513,87 @@ function App() {
         </Window>
       )}
 
+      {openWindows.includes('paint') && (
+        <Window
+          title="Paint.exe"
+          onClose={() => {
+            closeWindow('paint');
+          }}
+          defaultPosition={{x: 100, y: 120}}
+          width="540px"
+          minimized={minimizedWindows.includes('paint')}
+          onMinimize={() => toggleWindowVisibility('paint')}
+        >
+          <Paint 
+            imageSrc={imageSrc}
+            onApplyDoodle={(dataUrl) => {
+              setDoodleSrc(dataUrl);
+            }}
+            onClearDoodle={() => {
+              setDoodleSrc(null);
+            }}
+            currentDoodle={doodleSrc}
+          />
+        </Window>
+      )}
+
+      {openWindows.includes('terminal') && (
+        <Window
+          title="Command.com"
+          onClose={() => closeWindow('terminal')}
+          defaultPosition={{x: 150, y: 150}}
+          width="600px"
+          minimized={minimizedWindows.includes('terminal')}
+          onMinimize={() => toggleWindowVisibility('terminal')}
+        >
+          <Terminal
+            currentTheme={theme}
+            onChangeTheme={(newTheme) => setTheme(newTheme)}
+            onFryCommand={() => {
+              setFilters(prev => ({
+                ...prev,
+                frying: { active: true }
+              }));
+              setJpegSettings(prev => ({
+                ...prev,
+                active: true,
+                fryCount: 30,
+                fryQuality: 1
+              }));
+            }}
+            onGlitchSystem={() => {
+              setIsSystemGlitched(true);
+            }}
+          />
+        </Window>
+      )}
+
+      {openWindows.includes('meme-text') && (
+        <Window
+          title="Meme Text Editor"
+          onClose={() => closeWindow('meme-text')}
+          defaultPosition={{x: 200, y: 80}}
+          width="400px"
+          minimized={minimizedWindows.includes('meme-text')}
+          onMinimize={() => toggleWindowVisibility('meme-text')}
+        >
+          <MemeTextEditor
+            currentText={memeText}
+            onApplyText={(textObj) => {
+              setMemeText(textObj);
+            }}
+            onClearText={() => {
+              setMemeText({
+                topText: '',
+                bottomText: '',
+                wordArtText: '',
+                wordArtStyle: 'rainbow'
+              });
+            }}
+          />
+        </Window>
+      )}
+
       <main>
         {editorState.open && (
           <div className="window" style={{ display: editorState.minimized ? 'none' : 'flex' }}>
@@ -493,6 +615,8 @@ function App() {
                     filters={filters} 
                     jpegSettings={jpegSettings}
                     canvasRef={canvasRef}
+                    doodleSrc={doodleSrc}
+                    memeText={memeText}
                   />
                   <button className="btn" onClick={handleClearImage} style={{marginTop: '1rem'}}>
                     Clear Image
@@ -552,6 +676,15 @@ function App() {
                 <button className="start-menu-item" onClick={() => { openWindow('media-player'); setShowStartMenu(false); }}>
                   🎵 Music Player
                 </button>
+                <button className="start-menu-item" onClick={() => { openWindow('paint'); setShowStartMenu(false); }}>
+                  🖌️ Paint
+                </button>
+                <button className="start-menu-item" onClick={() => { openWindow('terminal'); setShowStartMenu(false); }}>
+                  📟 Command Prompt
+                </button>
+                <button className="start-menu-item" onClick={() => { openWindow('meme-text'); setShowStartMenu(false); }}>
+                  📝 Meme Text
+                </button>
                 <button className="start-menu-item" onClick={() => { 
                   setEditorState({ open: true, minimized: false });
                   setControlsState({ open: true, minimized: false });
@@ -601,6 +734,9 @@ function App() {
                 case 'c-drive': return '💾 Drive C';
                 case 'gallery': return '🖼️ Gallery';
                 case 'image-viewer': return '👁️ Viewer';
+                case 'paint': return '🖌️ Paint.exe';
+                case 'terminal': return '📟 Command.com';
+                case 'meme-text': return '📝 Meme Text';
                 default: return id;
               }
             };
@@ -631,6 +767,49 @@ function App() {
           </div>
         </div>
       </footer>
+
+      {isSystemGlitched && (
+        <div className="bsod-overlay" style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          background: '#0000aa',
+          color: '#ffffff',
+          fontFamily: '"Courier New", Courier, monospace',
+          padding: '40px',
+          boxSizing: 'border-box',
+          zIndex: 99999,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          userSelect: 'none'
+        }}>
+          <div>
+            <h1 style={{ fontSize: '2.5rem', marginBottom: '20px', background: '#ffffff', color: '#0000aa', display: 'inline-block', padding: '0 10px' }}>SYSTEM_FATAL_ERROR</h1>
+            <p style={{ fontSize: '1.2rem', marginBottom: '20px', lineHeight: '1.5' }}>
+              A fatal exception 0x800F081F (GLITCH_CORE_OVERFLOW) has occurred. The current thread has exceeded maximum deep-frying boundaries.
+            </p>
+            <p style={{ fontSize: '1.2rem', marginBottom: '20px', lineHeight: '1.5' }}>
+              * Press any key or wait for the system to attempt auto-recovery.
+              <br />
+              * If this is the first time you\'ve seen this error screen, restart your brain.
+              <br />
+              * If this screen appears again, check for too many compression artifacts.
+            </p>
+            <div style={{ fontSize: '1.2rem', marginTop: '40px' }}>
+              Memory Dump Progress: {glitchProgress}%
+              <div style={{ width: '300px', height: '24px', border: '3px solid #fff', marginTop: '10px', background: '#0000aa', position: 'relative' }}>
+                <div style={{ height: '100%', background: '#fff', width: `${glitchProgress}%`, transition: 'width 0.1s linear' }} />
+              </div>
+            </div>
+          </div>
+          <div style={{ fontSize: '1rem', opacity: 0.7 }}>
+            Press Ctrl+Alt+Del to restart. Auto-healing in progress...
+          </div>
+        </div>
+      )}
     </div>
   )
 }
