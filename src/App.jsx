@@ -9,6 +9,7 @@ import ThemeSwitcher from './components/ThemeSwitcher'
 import Paint from './components/Paint'
 import Terminal from './components/Terminal'
 import MemeTextEditor from './components/MemeTextEditor'
+import FeedbackForm from './components/FeedbackForm'
 
 const DEFAULT_FILTERS = {
   deepFry: { active: false, intensity: 50 },
@@ -312,6 +313,10 @@ function App() {
           <div style={{fontSize: '40px'}}>📝</div>
           <span>Meme Text</span>
         </div>
+        <div className="desktop-icon" style={{background: 'var(--accent-orange)'}} onClick={() => toggleWindowVisibility('feedback-form')}>
+          <div style={{fontSize: '40px'}}>📬</div>
+          <span>Suggest.exe</span>
+        </div>
       </div>
 
       {openWindows.includes('recycle-bin') && (
@@ -568,6 +573,19 @@ function App() {
         </Window>
       )}
 
+      {openWindows.includes('feedback-form') && (
+        <Window
+          title="Suggest Feature"
+          onClose={() => closeWindow('feedback-form')}
+          defaultPosition={{x: 250, y: 100}}
+          width="480px"
+          minimized={minimizedWindows.includes('feedback-form')}
+          onMinimize={() => toggleWindowVisibility('feedback-form')}
+        >
+          <FeedbackForm />
+        </Window>
+      )}
+
       {openWindows.includes('meme-text') && (
         <Window
           title="Meme Text Editor"
@@ -685,6 +703,9 @@ function App() {
                 <button className="start-menu-item" onClick={() => { openWindow('meme-text'); setShowStartMenu(false); }}>
                   📝 Meme Text
                 </button>
+                <button className="start-menu-item" onClick={() => { openWindow('feedback-form'); setShowStartMenu(false); }}>
+                  📬 Suggest Feature
+                </button>
                 <button className="start-menu-item" onClick={() => { 
                   setEditorState({ open: true, minimized: false });
                   setControlsState({ open: true, minimized: false });
@@ -737,6 +758,7 @@ function App() {
                 case 'paint': return '🖌️ Paint.exe';
                 case 'terminal': return '📟 Command.com';
                 case 'meme-text': return '📝 Meme Text';
+                case 'feedback-form': return '📬 Suggest.exe';
                 default: return id;
               }
             };
