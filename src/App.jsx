@@ -10,6 +10,8 @@ import Paint from './components/Paint'
 import Terminal from './components/Terminal'
 import MemeTextEditor from './components/MemeTextEditor'
 import FeedbackForm from './components/FeedbackForm'
+import Login from './components/Login'
+import ShutdownScreen from './components/ShutdownScreen'
 
 const DEFAULT_FILTERS = {
   deepFry: { active: false, intensity: 50 },
@@ -28,6 +30,8 @@ const DEFAULT_JPEG_SETTINGS = {
 };
 
 function App() {
+  const [systemState, setSystemState] = useState('logged_in') // 'locked' | 'logged_in' | 'shutdown'
+  const [currentUser, setCurrentUser] = useState('Guest')
   const [imageSrc, setImageSrc] = useState(null)
   const [filters, setFilters] = useState(DEFAULT_FILTERS)
   const [jpegSettings, setJpegSettings] = useState(DEFAULT_JPEG_SETTINGS)
@@ -207,6 +211,24 @@ function App() {
     setMinimizedWindows(prev => prev.filter(w => w !== id));
   }
 
+  if (systemState === 'shutdown') {
+    return <ShutdownScreen onRestart={() => setSystemState('locked')} />;
+  }
+
+  if (systemState === 'locked') {
+    return (
+      <div className={`theme-${theme}`}>
+        <Login 
+          onLogin={(username) => {
+            setSystemState('logged_in');
+            setCurrentUser(username);
+          }} 
+          onShutdown={() => setSystemState('shutdown')} 
+        />
+      </div>
+    );
+  }
+
   return (
     <div className={`app-container theme-${theme}`}>
       <header className="site-header">
@@ -316,6 +338,10 @@ function App() {
         <div className="desktop-icon" style={{background: 'var(--accent-orange)'}} onClick={() => toggleWindowVisibility('feedback-form')}>
           <div style={{fontSize: '40px'}}>📬</div>
           <span>Suggest.exe</span>
+        </div>
+        <div className="desktop-icon" style={{background: 'var(--accent-pink)'}} onClick={() => openWindow('login-window')}>
+          <div style={{fontSize: '40px'}}>🔐</div>
+          <span>User Login</span>
         </div>
       </div>
 
@@ -612,6 +638,26 @@ function App() {
         </Window>
       )}
 
+      {openWindows.includes('login-window') && (
+        <Window
+          title="User Login"
+          onClose={() => closeWindow('login-window')}
+          defaultPosition={{x: 200, y: 100}}
+          width="460px"
+          minimized={minimizedWindows.includes('login-window')}
+          onMinimize={() => toggleWindowVisibility('login-window')}
+        >
+          <Login
+            isWindowed={true}
+            onLogin={(username) => {
+              setCurrentUser(username);
+              closeWindow('login-window');
+            }}
+            onShutdown={() => setSystemState('shutdown')}
+          />
+        </Window>
+      )}
+
       <main>
         {editorState.open && (
           <div className="window" style={{ display: editorState.minimized ? 'none' : 'flex' }}>
@@ -678,8 +724,13 @@ function App() {
           
           {showStartMenu && (
             <div className="start-menu" ref={startMenuRef}>
-              <div className="start-menu-header">
-                <span>Distorted Pixels OS</span>
+              <div className="start-menu-header" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <span style={{ fontWeight: 'bold' }}>Distorted Pixels OS</span>
+                {currentUser && (
+                  <span style={{ fontSize: '0.8rem', opacity: 0.8, textTransform: 'none' }}>
+                    User: {currentUser}
+                  </span>
+                )}
               </div>
               <div className="start-menu-items">
                 <button className="start-menu-item" onClick={() => { openWindow('my-computer'); setShowStartMenu(false); }}>
@@ -716,6 +767,25 @@ function App() {
                 <div className="start-menu-divider" />
                 <button className="start-menu-item" onClick={() => { openWindow('system-properties'); setShowStartMenu(false); }}>
                   ⚙️ System Properties
+                </button>
+                <div className="start-menu-divider" />
+                <button className="start-menu-item" onClick={() => { 
+                  openWindow('login-window'); 
+                  setShowStartMenu(false); 
+                }}>
+                  🔐 Switch User / Login...
+                </button>
+                <button className="start-menu-item" onClick={() => { 
+                  setSystemState('locked'); 
+                  setShowStartMenu(false); 
+                }}>
+                  🔓 Lock Screen / Log Out
+                </button>
+                <button className="start-menu-item" onClick={() => { 
+                  setSystemState('shutdown'); 
+                  setShowStartMenu(false); 
+                }}>
+                  🛑 Shut Down...
                 </button>
               </div>
             </div>
@@ -759,6 +829,7 @@ function App() {
                 case 'terminal': return '📟 Command.com';
                 case 'meme-text': return '📝 Meme Text';
                 case 'feedback-form': return '📬 Suggest.exe';
+                case 'login-window': return '🔐 User Login';
                 default: return id;
               }
             };

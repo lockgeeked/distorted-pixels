@@ -1119,3 +1119,230 @@ select:focus {
 .webcam-booth video {
   transform: scaleX(-1); /* Mirror camera preview for natural feeling */
 }
+
+/* Boot Screen Styles */
+.boot-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000000;
+  color: #39ff14; /* Retro neon green */
+  font-family: 'Courier New', Courier, monospace;
+  padding: 40px;
+  box-sizing: border-box;
+  z-index: 100000;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  user-select: none;
+}
+
+.boot-header {
+  border-bottom: 2px solid #39ff14;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.boot-logo {
+  font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+
+.boot-specs {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  line-height: 1.5;
+  margin-bottom: 30px;
+}
+
+.boot-log {
+  flex: 1;
+  font-size: 1rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.boot-log-line {
+  white-space: pre-wrap;
+}
+
+.boot-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.boot-progress-container {
+  width: 100%;
+  max-width: 500px;
+  height: 24px;
+  border: 2px solid #39ff14;
+  background: #000;
+  position: relative;
+  overflow: hidden;
+}
+
+.boot-progress-bar {
+  height: 100%;
+  background-color: #39ff14;
+  transition: width 0.1s linear;
+}
+
+/* Login Overlay Styles */
+.login-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #008080; /* Classic Windows 95 Teal */
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.theme-weirdos .login-overlay {
+  background-color: var(--bg-color);
+}
+
+.theme-dark .login-overlay {
+  background-color: #0d0d0f;
+  background-image: radial-gradient(circle, rgba(189, 147, 249, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.login-dialog-window {
+  width: 100%;
+  max-width: 450px;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.login-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--win-bg);
+  padding: 10px 0;
+}
+
+.login-field-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.login-field-row label {
+  width: 100px;
+  font-weight: bold;
+  font-family: var(--title-font), sans-serif;
+  color: var(--win-text);
+}
+
+.login-field-row input, .login-field-row select {
+  flex: 1;
+  padding: 6px 10px;
+  font-family: inherit;
+  font-size: 1.1rem;
+  border: var(--border-width) solid var(--border-color);
+  background: #ffffff;
+  color: #000000;
+  box-shadow: inset 2px 2px 0px rgba(0,0,0,0.1);
+}
+
+.login-banner {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border-bottom: var(--border-width) solid var(--border-color);
+  padding-bottom: 15px;
+  margin-bottom: 5px;
+}
+
+.login-banner-icon {
+  font-size: 3rem;
+  animation: floatIcon 3s ease-in-out infinite;
+}
+
+@keyframes floatIcon {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.login-banner-text h2 {
+  font-family: var(--title-font), sans-serif;
+  text-transform: uppercase;
+  font-size: 1.5rem;
+  color: var(--win-text);
+}
+
+.login-banner-text p {
+  font-size: 0.95rem;
+  opacity: 0.8;
+  color: var(--win-text);
+}
+
+.login-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Shutdown Screen */
+.shutdown-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000000;
+  color: #ff5722; /* Classic orange/amber warning text */
+  font-family: 'Courier New', Courier, monospace;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  z-index: 100001;
+  user-select: none;
+}
+
+.shutdown-message {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 40px;
+  line-height: 1.6;
+  text-shadow: 0 0 10px rgba(255, 87, 34, 0.5);
+  animation: glowText 2s ease-in-out infinite alternate;
+}
+
+@keyframes glowText {
+  from { text-shadow: 0 0 5px rgba(255, 87, 34, 0.5); }
+  to { text-shadow: 0 0 20px rgba(255, 87, 34, 0.9), 0 0 30px rgba(255, 87, 34, 0.4); }
+}
+
+.shake {
+  animation: shakeAnim 0.3s ease-in-out;
+}
+
+@keyframes shakeAnim {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-10px); }
+  40%, 80% { transform: translateX(10px); }
+}
