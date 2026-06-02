@@ -1091,18 +1091,6 @@ select:focus {
   color: #000 !important;
 }
 
-/* Terminal Styling */
-.terminal-window::-webkit-scrollbar {
-  width: 8px;
-}
-.terminal-window::-webkit-scrollbar-track {
-  background: #000;
-}
-.terminal-window::-webkit-scrollbar-thumb {
-  background: #333;
-  border: 1px solid #39ff14;
-}
-
 /* BSOD Crash Animation Overlay */
 .bsod-overlay {
   animation: bsodFlash 0.15s ease-out;

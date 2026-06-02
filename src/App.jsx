@@ -7,7 +7,6 @@ import Window from './components/Window'
 import MediaPlayer from './components/MediaPlayer'
 import ThemeSwitcher from './components/ThemeSwitcher'
 import Paint from './components/Paint'
-import Terminal from './components/Terminal'
 import MemeTextEditor from './components/MemeTextEditor'
 import FeedbackForm from './components/FeedbackForm'
 import Login from './components/Login'
@@ -327,10 +326,6 @@ function App() {
           <div style={{fontSize: '40px'}}>🖌️</div>
           <span>Paint.exe</span>
         </div>
-        <div className="desktop-icon" style={{background: '#111', border: 'var(--border-width) solid #39ff14'}} onClick={() => toggleWindowVisibility('terminal')}>
-          <div style={{fontSize: '40px', color: '#39ff14'}}>📟</div>
-          <span style={{color: '#39ff14'}}>Command.com</span>
-        </div>
         <div className="desktop-icon" style={{background: 'var(--accent-yellow)'}} onClick={() => toggleWindowVisibility('meme-text')}>
           <div style={{fontSize: '40px'}}>📝</div>
           <span>Meme Text</span>
@@ -568,37 +563,6 @@ function App() {
         </Window>
       )}
 
-      {openWindows.includes('terminal') && (
-        <Window
-          title="Command.com"
-          onClose={() => closeWindow('terminal')}
-          defaultPosition={{x: 150, y: 150}}
-          width="600px"
-          minimized={minimizedWindows.includes('terminal')}
-          onMinimize={() => toggleWindowVisibility('terminal')}
-        >
-          <Terminal
-            currentTheme={theme}
-            onChangeTheme={(newTheme) => setTheme(newTheme)}
-            onFryCommand={() => {
-              setFilters(prev => ({
-                ...prev,
-                frying: { active: true }
-              }));
-              setJpegSettings(prev => ({
-                ...prev,
-                active: true,
-                fryCount: 30,
-                fryQuality: 1
-              }));
-            }}
-            onGlitchSystem={() => {
-              setIsSystemGlitched(true);
-            }}
-          />
-        </Window>
-      )}
-
       {openWindows.includes('feedback-form') && (
         <Window
           title="Suggest Feature"
@@ -748,9 +712,6 @@ function App() {
                 <button className="start-menu-item" onClick={() => { openWindow('paint'); setShowStartMenu(false); }}>
                   🖌️ Paint
                 </button>
-                <button className="start-menu-item" onClick={() => { openWindow('terminal'); setShowStartMenu(false); }}>
-                  📟 Command Prompt
-                </button>
                 <button className="start-menu-item" onClick={() => { openWindow('meme-text'); setShowStartMenu(false); }}>
                   📝 Meme Text
                 </button>
@@ -826,7 +787,6 @@ function App() {
                 case 'gallery': return '🖼️ Gallery';
                 case 'image-viewer': return '👁️ Viewer';
                 case 'paint': return '🖌️ Paint.exe';
-                case 'terminal': return '📟 Command.com';
                 case 'meme-text': return '📝 Meme Text';
                 case 'feedback-form': return '📬 Suggest.exe';
                 case 'login-window': return '🔐 User Login';
