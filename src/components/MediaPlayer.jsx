@@ -8,27 +8,54 @@ const MediaPlayer = () => {
   const [volume, setVolume] = useState(0.5);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [isSeeking, setIsSeeking] = useState(false);
+  const [seekTime, setSeekTime] = useState(0);
   
   const audioRef = useRef(null);
 
+  // Volume sync
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = volume;
     }
   }, [volume]);
 
+  // Track change / Playback sync
+  useEffect(() => {
+    setCurrentTime(0);
+    setSeekTime(0);
+    setDuration(0);
+    setIsSeeking(false);
+
+    if (audioRef.current) {
+      audioRef.current.load();
+      if (isPlaying) {
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(e => {
+            console.error("Audio playback error:", e);
+            setIsPlaying(false);
+          });
+        }
+      }
+    }
+  }, [currentTrackIndex]);
+
   useEffect(() => {
     if (audioRef.current) {
       if (isPlaying) {
-        audioRef.current.play().catch(e => {
-          console.error("Audio playback failed", e);
-          setIsPlaying(false);
-        });
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(e => {
+            console.error("Audio playback error:", e);
+            setIsPlaying(false);
+          });
+        }
       } else {
         audioRef.current.pause();
       }
     }
-  }, [isPlaying, currentTrackIndex]);
+  }, [isPlaying]);
 
   const togglePlay = () => {
     setIsPlaying(!isPlaying);
@@ -45,31 +72,67 @@ const MediaPlayer = () => {
   };
 
   const handleTimeUpdate = () => {
-    if (audioRef.current) {
-      setCurrentTime(audioRef.current.currentTime);
-    }
-  };
-
-  const handleLoadedMetadata = () => {
-    if (audioRef.current) {
-      setDuration(audioRef.current.duration);
-    }
-  };
-
-  const handleSeek = (e) => {
-    const time = Number(e.target.value);
-    if (audioRef.current) {
-      audioRef.current.currentTime = time;
+    if (audioRef.current && !isSeeking) {
+      const time = audioRef.current.currentTime;
       setCurrentTime(time);
+      setSeekTime(time);
+    }
+  };
+
+  const updateDuration = () => {
+    if (audioRef.current) {
+      const d = audioRef.current.duration;
+      if (Number.isFinite(d) && d > 0) {
+        setDuration(d);
+      }
+    }
+  };
+
+  const handleSeekStart = () => {
+    setIsSeeking(true);
+  };
+
+  const handleSeekInput = (e) => {
+    const newTime = parseFloat(e.target.value);
+    setSeekTime(newTime);
+  };
+
+  const handleSeekCommit = (e) => {
+    const newTime = parseFloat(e.target.value);
+    if (audioRef.current && Number.isFinite(newTime)) {
+      try {
+        audioRef.current.currentTime = newTime;
+      } catch (err) {
+        console.warn("Audio seek error:", err);
+      }
+      setCurrentTime(newTime);
+      setSeekTime(newTime);
+    }
+    setIsSeeking(false);
+  };
+
+  const handleSliderChange = (e) => {
+    const newTime = parseFloat(e.target.value);
+    if (audioRef.current && Number.isFinite(newTime)) {
+      try {
+        audioRef.current.currentTime = newTime;
+      } catch (err) {
+        console.warn("Audio seek error:", err);
+      }
+      setCurrentTime(newTime);
+      setSeekTime(newTime);
     }
   };
 
   const formatTime = (time) => {
-    if (isNaN(time) || !isFinite(time)) return "00:00";
+    if (isNaN(time) || !isFinite(time) || time < 0) return "00:00";
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
+
+  const displayTime = isSeeking ? seekTime : currentTime;
+  const maxSeek = duration > 0 ? duration : 100;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', alignItems: 'center', width: '100%' }}>
@@ -108,17 +171,29 @@ const MediaPlayer = () => {
 
       {/* Seek Bar */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', marginTop: '5px' }}>
-        <span style={{ fontFamily: 'monospace', fontSize: '0.9rem', color: 'var(--win-text)' }}>{formatTime(currentTime)}</span>
+        <span style={{ fontFamily: 'monospace', fontSize: '0.9rem', color: 'var(--win-text)', minWidth: '45px' }}>
+          {formatTime(displayTime)}
+        </span>
         <input 
           type="range" 
           min="0" 
-          max={duration || 0} 
+          max={maxSeek} 
           step="0.1" 
-          value={currentTime} 
-          onChange={handleSeek}
-          style={{ flex: 1 }}
+          value={displayTime} 
+          onMouseDown={handleSeekStart}
+          onTouchStart={handleSeekStart}
+          onInput={handleSeekInput}
+          onChange={handleSliderChange}
+          onMouseUp={handleSeekCommit}
+          onTouchEnd={handleSeekCommit}
+          onKeyUp={handleSeekCommit}
+          disabled={duration === 0}
+          style={{ flex: 1, cursor: duration === 0 ? 'wait' : 'pointer' }}
+          title={duration === 0 ? "Loading track..." : "Seek"}
         />
-        <span style={{ fontFamily: 'monospace', fontSize: '0.9rem', color: 'var(--win-text)' }}>{formatTime(duration)}</span>
+        <span style={{ fontFamily: 'monospace', fontSize: '0.9rem', color: 'var(--win-text)', minWidth: '45px', textAlign: 'right' }}>
+          {formatTime(duration)}
+        </span>
       </div>
 
       {/* Volume Slider */}
@@ -140,9 +215,13 @@ const MediaPlayer = () => {
       <audio 
         ref={audioRef} 
         src={TRACKS[currentTrackIndex]} 
+        preload="metadata"
         onEnded={nextTrack}
         onTimeUpdate={handleTimeUpdate}
-        onLoadedMetadata={handleLoadedMetadata}
+        onLoadedMetadata={updateDuration}
+        onDurationChange={updateDuration}
+        onCanPlay={updateDuration}
+        onLoadedData={updateDuration}
         style={{ display: 'none' }}
       />
     </div>
